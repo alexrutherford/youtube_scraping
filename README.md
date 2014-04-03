@@ -26,7 +26,7 @@ v,vv|Flags to log verbosely(v) and very verbosely (vv) to screen. For debugging
 *log.csv* stores record of API requests for debugging and understanding API behaviour
 *out.csv* stores 
 
-1.Video title, author and id (URL is youtube.com/watch?v=<id>)
+1.Video title, author and id (URL is youtube.com/watch?v=id)
 2.Comment, comment author information (summary, location and display name)
 
 ##Known Issues

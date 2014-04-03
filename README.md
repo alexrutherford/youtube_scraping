@@ -25,8 +25,13 @@ v,vv|Flags to log verbosely(v) and very verbosely (vv) to screen. For debugging
 
 *log.csv* stores record of API requests for debugging and understanding API behaviour
 *out.csv* stores 
+
 1.Video title, author and id (URL is youtube.com/watch?v=<id>)
 2.Comment, comment author information (summary, location and display name)
+
+##Known Issues
+
+The search API will often return duplicate videos when paging through the search results past the first 500 videos. It is possible that the same video is listed twice; once as an original and again when placed in a playlist. There may be new results listed on later pages however ([discussion here]{https://code.google.com/p/gdata-issues/issues/detail?id=3979})
 
 ##Requirements
 

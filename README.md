@@ -35,4 +35,4 @@ The search API will often return duplicate videos when paging through the search
 
 ##Requirements
 
-Requires requests library
+Requires [requests](http://docs.python-requests.org/en/latest/) library

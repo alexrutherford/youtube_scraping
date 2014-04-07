@@ -1,14 +1,28 @@
 Python script to extract comment text from videos matching a keyword search.
 
-Uses YouTube API v2 (currently deprecated), doesn't require API key
+Uses YouTube API v3 to get IDs of videos matching keyword, requires API key.
+Uses YouTube API v2 (currently deprecated), doesn't require API key, to
+get comments for these videos.
+
+v3 allows breaking down videos by published date, doesn't breach API limit
+v2 allows collection of comments
 
 ##Pseudocode
 
 Basic program flow is as follows
 
+get\_videos.py
+
 ```
 for video in search(keyword):
   log(video,getLocation(video))
+
+```
+
+getcomments.py
+
+```
+for video in search(keyword):
 
   for comment in getComments(video):
     log(getAuthor(comment),getLocation(getAuthor(comment)),comment)

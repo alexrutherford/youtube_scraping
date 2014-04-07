@@ -71,7 +71,7 @@ for startDate,endDate in zip(startDates,endDates):
   while 'nextPageToken' in d.keys():
     print nPages,'NEXT',d['nextPageToken'],nDuplicate,d['items'][0]['id']['videoId']
 
-    data=requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key=AIzaSyDJK0-GmyE9re8ahNGu5bR5cvqWATXlh44&maxResults=50&type=video&'+'pageToken='+d['nextPageToken']+'&publishedBefore='+endDate+'&publishedAfter='+startDate)
+    data=requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key='+KEY+'&maxResults=50&type=video&'+'pageToken='+d['nextPageToken']+'&publishedBefore='+endDate+'&publishedAfter='+startDate)
 
     d=data.json()
 

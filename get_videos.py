@@ -2,7 +2,7 @@
 ##################
 # Script using YouTube API v3
 # to collect videos matching a keyword search
-# Cylces through each day of a date range to 
+# Cylces through each day of a date range to
 # avoid hitting API limit and missing videos
 # Alex Rutherford 2014
 ##################
@@ -11,8 +11,16 @@ import requests
 import time
 import sys
 import csv
+from utils import *
+from datetime import date
+from dateutil.rrule import rrule, DAILY
+
+startTime=time.mktime(time.localtime())
 
 outFile=csv.writer(open('videos.csv','w'),delimiter='\t')
+
+logFile=csv.writer(open('log_.csv','a'),delimiter='\t')
+# Log file for requests
 
 verbose=True
 verbose=False
@@ -27,36 +35,34 @@ def writeVideo(video):
 # ID, channel title, video title, time
 #################
 
-startDate='2014-03-01T00:00:00Z'
-print startDate
+startDate=date(2014,1,1)
+endDate=date(2014,4,7)
 
-startDates=[str(y)+'-03-01T00:00:00Z' for y in range(2000,2013)]
-endDates=[str(y)+'-03-01T00:00:00Z' for y in range(2001,2014)]
-# Years
+startDates=[d for d in rrule(DAILY,dtstart=date(2014,1,1),until=date(2014,4,6))]
+startDates=[d.strftime("%Y-%m-%dT00:00:00Z") for d in startDates]
+endDates=[d for d in rrule(DAILY,dtstart=date(2014,1,2),until=date(2014,4,7))]
+endDates=[d.strftime("%Y-%m-%dT00:00:00Z") for d in endDates]
 
-startDates=['2013-'+str(m)+'-01T00:00:00Z' for m in range(1,12)]
-endDates=['2013-'+str(m)+'-01T00:00:00Z' for m in range(2,13)]
-# Months
+print startDates
 
-startDates=['2014-03-'+str(d).zfill(2)+'T00:00:00Z' for d in range(1,30)]
-endDates=['2014-03-'+str(d).zfill(2)+'T00:00:00Z' for d in range(2,31)]
-# Days - March
+QUERY=u''
 
-# First 6 days of april gave 426 results
-
-QUERY=u'Italy'
 KEY=''
-# API key
+
+outFile.writerow([getTime(startTime),QUERY.encode('utf-8'),startDate,endDate])
+# Write details of query as a header
 
 for startDate,endDate in zip(startDates,endDates):
-
+# Loop over days and get videos
   nResults=0
   nDuplicate=0
 
   print 'DATES',startDate,' - ',endDate
 
 ##############
-  data=requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key='+KEY+'&maxResults=50&type=video&publishedBefore='+endDate+'&publishedAfter='+startDate)
+  requestString='https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key='+KEY+'&maxResults=50&type=video&publishedBefore='+endDate+'&publishedAfter='+startDate
+  data=requests.get(requestString)
+  logFile.writerow([getTime(startTime),requestString.encode('utf-8')])
 
   d=data.json()
 
@@ -70,8 +76,9 @@ for startDate,endDate in zip(startDates,endDates):
 ##############
   while 'nextPageToken' in d.keys():
     print nPages,'NEXT',d['nextPageToken'],nDuplicate,d['items'][0]['id']['videoId']
-
-    data=requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key='+KEY+'&maxResults=50&type=video&'+'pageToken='+d['nextPageToken']+'&publishedBefore='+endDate+'&publishedAfter='+startDate)
+    requestString='https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key='+KEY+'&maxResults=50&type=video&'+'pageToken='+d['nextPageToken']+'&publishedBefore='+endDate+'&publishedAfter='+startDate
+    data=requests.get(requestString)
+    logFile.writerow([getTime(startTime),requestString.encode('utf-8')])
 
     d=data.json()
 

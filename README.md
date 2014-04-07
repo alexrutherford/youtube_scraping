@@ -7,6 +7,14 @@ get comments for these videos.
 v3 allows breaking down videos by published date, doesn't breach API limit
 v2 allows collection of comments
 
+##To Run
+
+1. Follow [instructions](https://developers.google.com/youtube/v3/getting-started) to get YouTube v3 API key, add to get\_videos.py.
+2. Replace **QUERY** with keyword of interest in get\_videos.py
+3. Choose date range of interest and replace **startDate** and **endDate**
+4. Run get\_videos.py, writes list of video IDs to videos.csv and logs to log.csv
+5. Run get\_comments.py, reads videos.csv, logs to log.csv and writes comments and comment author info to out.csv
+
 ##Pseudocode
 
 Basic program flow is as follows
@@ -37,7 +45,7 @@ v,vv|Flags to log verbosely(v) and very verbosely (vv) to screen. For debugging
 ##Output Files
 
 *log.csv* stores record of API requests for debugging and understanding API behaviour
-*out.csv* stores 
+*out.csv* stores
 
 1.Video title, author and id (URL is youtube.com/watch?v=id)
 2.Comment, comment author information (summary, location and display name)

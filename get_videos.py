@@ -45,6 +45,8 @@ endDates=['2014-03-'+str(d).zfill(2)+'T00:00:00Z' for d in range(2,31)]
 # First 6 days of april gave 426 results
 
 QUERY=u'Italy'
+KEY=''
+# API key
 
 for startDate,endDate in zip(startDates,endDates):
 
@@ -54,7 +56,7 @@ for startDate,endDate in zip(startDates,endDates):
   print 'DATES',startDate,' - ',endDate
 
 ##############
-  data=requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key=AIzaSyDJK0-GmyE9re8ahNGu5bR5cvqWATXlh44&maxResults=50&type=video&publishedBefore='+endDate+'&publishedAfter='+startDate)
+  data=requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&q='+QUERY+'&key='+KEY+'&maxResults=50&type=video&publishedBefore='+endDate+'&publishedAfter='+startDate)
 
   d=data.json()
 

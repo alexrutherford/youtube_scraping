@@ -16,22 +16,21 @@ get\_videos.py
 ```
 for video in search(keyword):
   log(video,getLocation(video))
-
 ```
 
-getcomments.py
+get\_comments.py
 
 ```
-for video in search(keyword):
-
+for video in videosFile
   for comment in getComments(video):
     log(getAuthor(comment),getLocation(getAuthor(comment)),comment)
 ```
-Most code is to catch API errors and to sleep if too many requests are being made
+Most code is to catch API errors and to sleep if too many requests are being made. Keeps dictionary of authors to avoid mutliple queries of same info.
 
 ##Options
 Variable|Description
 --------|------------
+KEY|API v3 key
 QUERY|Keyword(s) to build list of videos, can include Boolean operators [documentation](https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters#qsp)
 v,vv|Flags to log verbosely(v) and very verbosely (vv) to screen. For debugging
 

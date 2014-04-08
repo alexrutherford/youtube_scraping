@@ -8,15 +8,25 @@
 import csv
 import requests
 import time,collections
-import re
+import re,sys
 from utils import *
 
-videoFile=csv.reader(open('videos.csv','r'),delimiter='\t')
+if sys.argv[1]=='-i':
+  videoFile=csv.reader(open(sys.argv[2],'r'),delimiter='\t')
+  outFileName=sys.argv[2].partition('videos_')[2]
+  outFileName='out_'+outFileName
+  print 'WRITING COMMENTS TO',outFileName
+  outFile=csv.writer(open(outFileName,'w'),delimiter='\t')
+else:
+  videoFile=csv.reader(open('videos.csv','r'),delimiter='\t')
+  outFile=csv.writer(open('out.csv','w'),delimiter='\t')
+  print 'WRITING COMMENTS TO out.csv'
+videoFile.next()
+# Get header
 
-logFile=csv.writer(open('log_.csv','a'),delimiter='\t')
+logFile=csv.writer(open('log.csv','a'),delimiter='\t')
 # Log file for requests
 
-outFile=csv.writer(open('out_.csv','w'),delimiter='\t')
 # Out file for saving content
 
 startTime=time.mktime(time.localtime())
@@ -45,15 +55,14 @@ for line in videoFile:
     print '(URL='+commentsLink+')'
     logFile.writerow([getTime(startTime),'REQUEST FAILED',commentsLink])
 
-  if re.search(r'Commenting is disabled for this video.',commentsRaw.text):
+  if re.search(r'Commenting is disabled for this video.',commentsRaw.text,flags=re.UNICODE):
     print 'COMMENTS DISABLED'
     logFile.writerow([getTime(startTime),commentsLink+'&alt=json&max-results=50','COMMENTS DISABLED'])
   else:
 
-    while commentsRaw.status_code in [403,500,503]:
+    while commentsRaw.status_code in [403,404,500,503,400]:
       print 'TOO MANY REQUESTS OR API UNAVAILABLE! SLEEPING....',
-      print commentsRaw.status_code
-      print commentsRaw.text
+      print commentsRaw.status_code,
       print getTime(startTime)
       time.sleep(60)
       commentsRaw=requests.get(commentsLink+'&alt=json&max-results=50')
@@ -77,7 +86,7 @@ for line in videoFile:
           if verbose:print comm['author'][0]['name']['$t'],comm['author'][0]['yt$userId']['$t']
           if not comm['author'][0]['yt$userId']['$t']=='__NO_YOUTUBE_ACCOUNT__':
             if not comm['author'][0]['yt$userId']['$t'] in list(authors.keys()):
-              authorInfo=getAuthorInfo(comm['author'][0]['yt$userId']['$t'])
+              authorInfo=getAuthorInfo(comm['author'][0]['yt$userId']['$t'],logFile,startTime)
               authors[comm['author'][0]['yt$userId']['$t']]=authorInfo
             else:
               authorInfo=authors[comm['author'][0]['yt$userId']['$t']]

@@ -18,26 +18,26 @@ def getTime(startTime):
   secs=diff-((hours*secsInHour)+(minutes*60))
   return time.strftime("%d %B %H:%M:%S", time.localtime())+' ('+str(hours)+':'+str(minutes)+':'+str(secs)+')'
 ######
-def getAuthorInfo(id):
+def getAuthorInfo(id,logFile,startTime):
 ######
 # Takes a user id and returns location and summary
 
   try:
     dRaw=requests.get('http://gdata.youtube.com/feeds/api/users/'+id+'?v=2&alt=json')
-    logFile.writerow([getTime(),'http://gdata.youtube.com/feeds/api/users/'+id+'?v=2&alt=json'])
+    logFile.writerow([getTime(startTime),'http://gdata.youtube.com/feeds/api/users/'+id+'?v=2&alt=json'])
   except:
     print '\t\tAUTHOR INFO REQUEST FAILED'
 
 #  while dRaw.status_code in [403,503]:
   while not dRaw.status_code in [200,201]:
     print 'TOO MANY REQUESTS OR API UNAVAILABLE! SLEEPING....',
-    logFile.writerow([getTime(),'API UNAVAILABLE',dRaw.status_code,dRaw.text])
+    logFile.writerow([getTime(startTime),'API UNAVAILABLE',dRaw.status_code,dRaw.text])
     print dRaw.status_code
     print dRaw.text
-    print getTime()
+    print getTime(startTime)
     time.sleep(60)
     dRaw=requests.get('http://gdata.youtube.com/feeds/api/users/'+id+'?v=2&alt=json')
-    logFile.writerow([getTime(),'http://gdata.youtube.com/feeds/api/users/'+id+'?v=2&alt=json'])
+    logFile.writerow([getTime(startTime),'http://gdata.youtube.com/feeds/api/users/'+id+'?v=2&alt=json'])
 
   d=dRaw.json()
 

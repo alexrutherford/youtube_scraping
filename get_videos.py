@@ -2,7 +2,7 @@
 ##################
 # Script using YouTube API v3
 # to collect videos matching a keyword search
-# Cycles through each day/month of a date range to
+# Cycles through each day of a date range to
 # avoid hitting API limit and missing videos
 # Alex Rutherford 2014
 ##################
@@ -32,7 +32,9 @@ videos=[]
 def writeVideo(video):
 #######
   global outFile
-  outFile.writerow([video['id']['videoId'],video['snippet']['channelTitle'].encode('utf-8'),video['snippet']['title'].encode('utf-8'),video['snippet']['publishedAt']])
+  try:print video['yt$statistics']
+  except:z=999999
+  outFile.writerow([video['id']['videoId'],video['snippet']['channelTitle'].encode('utf-8'),video['snippet']['title'].encode('utf-8'),video['snippet']['publishedAt'],time.strftime("%d-%m-%Y T%H:%M:%S.000Z",time.gmtime())])
 # ID, channel title, video title, time
 
 #################
@@ -44,7 +46,9 @@ def main():
   startDate=date(2014,1,1)
   endDate=date(2014,4,7)
 
-  if False:
+  daily=True
+
+  if daily:
   # Daily filtering
     startDates=[d for d in rrule(DAILY,dtstart=date(2014,1,1),until=date(2014,4,6))]
     startDates=[d.strftime("%Y-%m-%dT%H:%M:%SZ") for d in startDates]
@@ -57,13 +61,11 @@ def main():
     endDates=[d for d in rrule(HOURLY,dtstart=datetime(2014,1,1,1,0,0),until=datetime(2014,4,7,23,0,0))]
     endDates=[d.strftime("%Y-%m-%dT%H:%M:%SZ") for d in endDates]
 
-  print startDates[0:10]
-  print endDates[0:10]
-#  sys.exit(1)
 
   QUERY=u'Italy'
 
   KEY=''
+  # Fill this in
 
   outFile=csv.writer(open('videos_'+QUERY.encode('utf-8')+'.csv','w'),delimiter='\t')
   print 'WRITING VIDEO IDs TO','videos_'+QUERY.encode('utf-8')+'.csv'
@@ -86,9 +88,15 @@ def main():
 
     d=data.json()
 
-    if data.status_code in [403,500,503]:
+    while data.status_code in [403,500,503]:
       print data.text
-      sys.exit(1)
+      print 'SLEEPING'
+      time.sleep(60)
+      print 'RETRYING'
+      data=requests.get(requestString)
+      logFile.writerow([getTime(startTime),requestString.encode('utf-8')])
+
+      d=data.json()
 
     for v,video in enumerate(d['items']):
       if verbose: print '\tADDED',v,video['id']
